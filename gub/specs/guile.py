@@ -25,6 +25,9 @@ class Guile (target.AutoBuild):
 --enable-relocation
 --enable-rpath
 ''')
+    guile_configure_variables = misc.join_lines ('''
+have_makeinfo=no
+''')
     configure_variables = (target.AutoBuild.configure_variables
                            + misc.join_lines ('''
 CC_FOR_BUILD="
@@ -50,7 +53,8 @@ PATH=/usr/bin:$PATH
     # without setting the proper LD_LIBRARY_PATH.
     configure_command = ('GUILE_FOR_BUILD=%(tools_prefix)s/bin/guile '
                          + target.AutoBuild.configure_command
-                         + guile_configure_flags)
+                         + guile_configure_flags
+                         + guile_configure_variables)
     compile_command = ('preinstguile=%(tools_prefix)s/bin/guile '
                        + target.AutoBuild.compile_command)
     subpackage_names = ['doc', 'devel', 'runtime', '']
@@ -217,7 +221,8 @@ LDFLAGS='-L%(system_prefix)s/lib %(rpath)s'
 ''')
     configure_command = ('LD_LIBRARY_PATH=%(system_prefix)s/lib:${LD_LIBRARY_PATH-/foe} '
                          + tools.AutoBuild.configure_command
-                         + Guile.guile_configure_flags)
+                         + Guile.guile_configure_flags
+                         + Guile.guile_configure_variables)
     # FIXME: when configuring, guile runs binaries linked against
     # libltdl.
     # FIXME: when not x-building, guile runs gen_scmconfig, guile without

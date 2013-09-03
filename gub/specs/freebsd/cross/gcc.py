@@ -8,3 +8,7 @@ class Gcc__freebsd (cross_gcc.Gcc):
 --disable-libcilkrts
 --disable-__cxa_atexit
 '''))
+    configure_variables = (cross_gcc.Gcc.configure_variables 
+                + misc.join_lines ('''
+MAKEINFO=missing
+'''))

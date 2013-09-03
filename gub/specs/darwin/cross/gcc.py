@@ -3,6 +3,7 @@ import os
 from gub.specs.cross import gcc as cross_gcc
 from gub import loggedos
 from gub import cross
+from gub import misc
 
 class Gcc__darwin (cross_gcc.Gcc):
     dependencies = ['tools::gmp', 'tools::mpfr', 'tools::mpc', 'odcctools']

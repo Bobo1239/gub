@@ -6,8 +6,10 @@ from gub import loggedos
 from gub import misc
 from gub import repository
 from gub import target
+from gub import tools
 from gub import versiondb
 from gub.specs import ghostscript
+from gub.tools import python_version
 
 VERSION='v2.14'
 def url (version=VERSION):
@@ -56,6 +58,7 @@ sheet music from a high-level description file.'''
         'system::xetex',
         'system::xelatex',
         ]
+    python_version = tools.python_version
     if 'stat' in misc.librestrict ():
         dependencies = [x for x in dependencies
                         if x not in ['system::mf', 'system::mpost']
@@ -237,7 +240,7 @@ class LilyPond__debian (LilyPond):
             'libfontconfig1-dev',
             'libfreetype6-dev',
             'libglib2.0-dev',
-            'python2.4-dev',
+            'python%(python_version)s' % globals (),
             'libpango1.0-dev',
             'zlib1g-dev',
             'urw-fonts',

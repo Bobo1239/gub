@@ -1,4 +1,5 @@
 from gub import target
+from gub import tools
 
 class Ctypes (target.PythonBuild):
     source = 'http://surfnet.dl.sourceforge.net/sourceforge/ctypes/ctypes/1.0.2/ctypes-1.0.2.tar.gz'
@@ -8,6 +9,7 @@ class Ctypes (target.PythonBuild):
         'libffi',
         'python',
         ]
+    python_version = tools.python_version
     def patch (self):
         target.PythonBuild.patch (self)
         def defer (logger):
@@ -22,7 +24,7 @@ sysconfig.get_python_inc = get_python_inc
 from distutils.command import build_ext
 build_ext.build_ext._get_libraries = build_ext.build_ext.get_libraries
 def get_libraries (self, ext):
-    return self._get_libraries (ext) + ['python2.4']
+    return self._get_libraries (ext) + ['python%(python_version)s']
 build_ext.build_ext.get_libraries = get_libraries
 '''
             setup = self.expand ('%(srcdir)s/setup.py')
@@ -43,7 +45,7 @@ build_ext.build_ext.get_libraries = get_libraries
 ' --infodir=%(prefix_dir)s/share/info'
 ' --mandir=%(prefix_dir)s/share/man'
 ' --libdir=%(prefix_dir)s/lib'
-' CFLAGS=-I%(system_prefix)s/include/python2.4'
+' CFLAGS=-I%(system_prefix)s/include/python%(python_version)s'
 ]
 '''
 )],
@@ -56,14 +58,14 @@ class Ctypes__mingw (Ctypes):
     patches = Ctypes.patches + [
         'ctypes-mingw.patch',
         ]
-    install_command = 'cd %(srcdir)s && SO=%(so_extension)s LDSHARED="$CC -shared" LDFLAGS="-L%(system_prefix)s/bin -lpython2.4" CFLAGS="-DMS_WIN32" python %(srcdir)s/setup.py install --prefix=%(prefix_dir)s --root=%(install_root)s'
+    install_command = 'cd %(srcdir)s && SO=%(so_extension)s LDSHARED="$CC -shared" LDFLAGS="-L%(system_prefix)s/bin -lpython%(python_version)s" CFLAGS="-DMS_WIN32" python %(srcdir)s/setup.py install --prefix=%(prefix_dir)s --root=%(install_root)s'
     def patch (self):
         Ctypes.patch (self)
         self.file_sub ([('-fPIC', '-DMS_WIN32',)], '%(srcdir)s/setup.py')
-        self.file_sub ([('''[[]'python2.4'[]]''',
-                         '''['python2.4', 'ffi', 'ole32', 'oleaut32', 'uuid']''')],
+        self.file_sub ([('''[[]'python%(python_version)s'[]]''',
+                         '''['python%(python_version)s', 'ffi', 'ole32', 'oleaut32', 'uuid']''')],
                        '%(srcdir)s/setup.py')
     def install (self):
         Ctypes.install (self)
-        self.system ('cd %(install_prefix)s/lib/python2.4/site-packages && mv _ctypes.so _ctypes.dll')
-        self.system ('cd %(install_prefix)s/lib/python2.4/site-packages && mv _ctypes_test.so _ctypes_test.dll')
+        self.system ('cd %(install_prefix)s/lib/python%(python_version)s/site-packages && mv _ctypes.so _ctypes.dll')
+        self.system ('cd %(install_prefix)s/lib/python%(python_version)s/site-packages && mv _ctypes_test.so _ctypes_test.dll')

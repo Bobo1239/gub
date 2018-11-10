@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 #
 from gub import build
@@ -6,6 +7,9 @@ from gub import context
 from gub import loggedos
 from gub import misc
 from gub import octal
+
+#python_version = '2.4'
+python_version = '2.6'
 
 def get_cross_build_dependencies (settings):
     return []
@@ -46,22 +50,23 @@ def package_auto_dependency_dict (package):
                 # on linux-64, build linux-x86::guile with tools32::guile
                 if (package.settings.target_bits == '32'
                     and package.settings.build_bits == '64'):
-                    package.dependencies = [name.replace ('tools::', 'tools32::')
-                                            if (misc.strip_platform (name) in libs_archmatch
-                                                and 'system::' not in name
-                                                and ('cross/' not in name
-                                                     or 'runtime' in name)) else name
+                    package.dependencies = [(misc.strip_platform (name) in libs_archmatch
+                                             and 'system::' not in name
+                                             and ('cross/' not in name
+                                                  or 'runtime' in name))
+                                            and name.replace ('tools::', 'tools32::') or name
                                             for name in package.dependencies]
             # only keep tools32:: for libraries linked against,
             # do not build tools32::autotools etc
             if (package.settings.target_bits == '32'
                 and package.settings.build_bits == '64'):
-                package.dependencies = ['tools::' + misc.strip_platform (name)
-                                        if (misc.strip_platform (name) not in libs_archmatch
-                                            and misc.strip_name (name, package.platform ()) == 'tools32'
-                                            and 'system::' not in name
-                                            and ('cross/' not in name
-                                                 or 'runtime' in name)) else name
+                package.dependencies = [(misc.strip_platform (name) not in libs_archmatch
+                                         and misc.strip_name (name, package.platform ()) == 'tools32'
+                                         and 'system::' not in name
+                                         and ('cross/' not in name
+                                              or 'runtime' in name))
+                                        and 'tools::' + misc.strip_platform (name)
+                                        or name
                                         for name in package.dependencies]
             return package.dependencies
         package.get_build_dependencies \

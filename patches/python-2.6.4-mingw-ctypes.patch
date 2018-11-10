@@ -1,0 +1,11 @@
+--- python-2.6.4/Modules/_ctypes/callproc.c~	2009-09-18 22:12:29.000000000 +0200
++++ python-2.6.4/Modules/_ctypes/callproc.c	2012-08-30 13:55:18.392622132 +0200
+@@ -811,7 +811,7 @@
+ #ifndef DONT_USE_SEH
+ 	__try {
+ #endif
+-		delta =
++	  delta = 0;
+ #endif
+ 			ffi_call(&cif, (void *)pProc, resmem, avalues);
+ #ifdef MS_WIN32

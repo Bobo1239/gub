@@ -275,8 +275,8 @@
  	Monterey*) LDSHARED="cc -G -dy -Bdynamic -Bexport -L/usr/lib/ia64l64";;
  	CYGWIN*) LDSHARED="gcc -shared -Wl,--enable-auto-image-base";;
 +	mingw*) LDSHARED='$(CC) -mdll'
-+		BLDSHARED='$(CC) -mdll libpython$(VERSION).dll'
-+		LIBC='-lwsock32';;
++		BLDSHARED='$(CC) -mdll -L. -lpython$(VERSION) -lwsock32 -luuid -loleaut32 -lole32 '
++		LIBC='-lwsock32 -luuid -loleaut32 -lole32';;
  	atheos*) LDSHARED="gcc -shared";;
  	*)	LDSHARED="ld";;
  	esac

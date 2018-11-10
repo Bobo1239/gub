@@ -195,6 +195,8 @@ ac_cv_have_dev_ptc=${ac_cv_have_dev_ptc=no}
 ac_cv_have_dev_ptmx=${ac_cv_have_dev_ptmx=no}
 ac_cv_lib_dl_dlopen=${ac_cv_lib_dl_dlopen=no}
 ac_cv_search_dlopen=${ac_cv_search_dlopen=no}
+ac_cv_struct_addrinfo=${ac_cv_struct_addrinfo=yes}
+ac_cv_struct_sockaddr_storage=${ac_cv_struct_sockaddr_storage=yes}
 ac_cv_type_struct_sockaddr_storage=${ac_cv_type_struct_sockaddr_storage=yes}
 ac_exeext=${ac_exeext=}
 libltdl_cv_lib_dl_dlopen=${libltdl_cv_lib_dl_dlopen=yes}

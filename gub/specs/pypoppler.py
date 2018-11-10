@@ -1,4 +1,5 @@
 from gub import target
+from gub import tools
 
 class Pypoppler (target.AutoBuild):
     # for poppler-glib 0.12
@@ -17,7 +18,8 @@ class Pypoppler (target.AutoBuild):
         'poppler',
         ]
     force_autoupdate = True
-    configure_command = ('PYTHON=%(tools_prefix)s/bin/python PYTHON_INCLUDES=-I%(system_prefix)s/include/python2.4 '
+    python_version = tools.python_version
+    configure_command = ('PYTHON=%(tools_prefix)s/bin/python PYTHON_INCLUDES=-I%(system_prefix)s/include/python%(python_version)s '
                          + target.AutoBuild.configure_command)
     def autoupdate (self):
         self.file_sub ([(r'pkg-config ', r'$PKG_CONFIG ')], '%(srcdir)s/configure.ac')
@@ -30,4 +32,4 @@ class Pypoppler (target.AutoBuild):
 
 class Pypoppler__mingw (Pypoppler):
     configure_variables = (Pypoppler.configure_variables
-                  + ' LDFLAGS="-L%(system_prefix)s/bin -lpython2.4"')
+                  + ' LDFLAGS="-L%(system_prefix)s/bin -lpython%(python_version)s"')

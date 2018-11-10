@@ -1,0 +1,139 @@
+Teach the python module compiler setup.py about cross compilation.
+
+--- python-2-6-2.6.4/setup.py.orig	2012-08-28 08:30:53.821113419 +0200
++++ python-2-6-2.6.4/setup.py	2012-08-28 08:34:36.604832292 +0200
+@@ -5,6 +5,8 @@ __version__ = "$Revision: 75282 $"
+ 
+ import sys, os, imp, re, optparse
+ from glob import glob
++if os.environ.get ('system_root', ''):
++    sys.path.insert (0, os.environ.get ('srcdir', '') + '/Lib')
+ from platform import machine as platform_machine
+ 
+ from distutils import log
+@@ -16,6 +16,16 @@
+ from distutils.command.install import install
+ from distutils.command.install_lib import install_lib
+ 
++def exists_in_sysroot (f):
++    if (f.startswith ('/')
++        and not f.startswith (os.environ.get ('alltargetdir', ''))):
++        f = os.environ.get ('system_root', '') + f
++    if os_path_exists (f):
++       return f
++    return False
++os_path_exists = os.path.exists
++os.path.exists = exists_in_sysroot
++
+ # This global variable is used to hold the list of modules to be disabled.
+ disabled_module_list = []
+ 
+@@ -41,13 +55,14 @@
+     # Check the standard locations
+     for dir in std_dirs:
+         f = os.path.join(dir, filename)
+-        if os.path.exists(f): return []
++        if os.path.exists(f):
++            return [os.path.exists(dir)]
+ 
+     # Check the additional directories
+     for dir in paths:
+         f = os.path.join(dir, filename)
+         if os.path.exists(f):
+-            return [dir]
++            return [os.path.exists (dir)]
+ 
+     # Not found anywhere
+     return None
+@@ -174,6 +174,7 @@ class PyBuildExt(build_ext):
+         headers = glob("Include/*.h") + ["pyconfig.h"]
+ 
+         for ext in self.extensions[:]:
++            ext.libraries += (sysconfig.get_config_var ('EXT_LIBS') or '').replace ('-l', '').split ()
+             ext.sources = [ find_module_file(filename, moddirlist)
+                             for filename in ext.sources ]
+             if ext.depends is not None:
+@@ -796,7 +811,8 @@
+             for d in inc_dirs + db_inc_paths:
+                 f = os.path.join(d, "db.h")
+                 if db_setup_debug: print "db: looking for db.h in", f
+-                if os.path.exists(f):
++                f = os.path.exists(f)
++                if f:
+                     f = open(f).read()
+                     m = re.search(r"#define\WDB_VERSION_MAJOR\W(\d+)", f)
+                     if m:
+@@ -818,9 +834,9 @@
+                             allow_db_ver(db_ver) ):
+                             # save the include directory with the db.h version
+                             # (first occurrence only)
+-                            db_ver_inc_map[db_ver] = d
++                            db_ver_inc_map[db_ver] = os.path.exists (d)
+                             if db_setup_debug:
+-                                print "db.h: found", db_ver, "in", d
++                                print "db.h: found", db_ver, "in", os.path.exists (d)
+                         else:
+                             # we already found a header for this library version
+                             if db_setup_debug: print "db.h: ignoring", d
+@@ -905,7 +921,8 @@
+         # where /usr/include contains an old version of sqlite.
+         for d in inc_dirs + sqlite_inc_paths:
+             f = os.path.join(d, "sqlite3.h")
+-            if os.path.exists(f):
++            f = os.path.exists(f)
++            if f:
+                 if sqlite_setup_debug: print "sqlite: found %s"%f
+                 incf = open(f).read()
+                 m = re.search(
+@@ -990,7 +1007,8 @@
+         # the more recent berkeleydb's db.h file first in the include path
+         # when attempting to compile and it will fail.
+         f = "/usr/include/db.h"
+-        if os.path.exists(f) and not db_incs:
++        f = os.path.exists (f)
++        if f and not db_incs:
+             data = open(f).read()
+             m = re.search(r"#s*define\s+HASHVERSION\s+2\s*", data)
+             if m is not None:
+--- python-2.4.5/Makefile.pre.in~	2012-08-27 18:01:49.608729518 +0200
++++ python-2.4.5/Makefile.pre.in	2012-08-27 18:06:05.118707910 +0200
+@@ -895,7 +895,7 @@ sharedinstall:
+ 		--prefix=$(prefix) \
+ 		--install-scripts=$(BINDIR) \
+ 		--install-platlib=$(DESTSHARED) \
+-		--root=/$(DESTDIR)
++		--root=$(DESTDIR)
+ 
+ # Here are a couple of targets for MacOSX again, to install a full
+ # framework-based Python. frameworkinstall installs everything, the
+@@ -965,7 +965,7 @@ scriptsinstall:
+ 	./$(PYTHON_FOR_BUILD) $(srcdir)/Tools/scripts/setup.py install \
+ 	--prefix=$(prefix) \
+ 	--install-scripts=$(BINDIR) \
+-	--root=/$(DESTDIR)
++	--root=$(DESTDIR)
+ 
+ # Build the toplevel Makefile
+ Makefile.pre: Makefile.pre.in config.status
+--- python-2.4.5/Lib/distutils/unixccompiler.py~	2012-08-27 21:51:36.950636210 +0200
++++ python-2.4.5/Lib/distutils/unixccompiler.py	2012-08-27 21:50:00.732128349 +0200
+@@ -249,7 +249,7 @@
+         # this time, there's no way to determine this information from
+         # the configuration data stored in the Python installation, so
+         # we use this hack.
+-        compiler = os.path.basename(sysconfig.get_config_var("CC"))
++        compiler = os.path.basename(sysconfig.get_config_var("CC").split ()[0])
+         if sys.platform[:6] == "darwin":
+             # MacOSX's linker doesn't understand the -R flag at all
+             return "-L" + dir
+--- python-2.6-2.6.4/Lib/distutils/sysconfig.py~	2009-09-22 21:31:34.000000000 +0200
++++ python-2.6-2.6.4/Lib/distutils/sysconfig.py	2012-08-28 17:08:01.256687224 +0200
+@@ -217,6 +223,8 @@ def get_config_h_filename():
+ 
+ def get_makefile_filename():
+     """Return full pathname of installed Makefile from the Python build."""
++    if os.environ.get('system_root', ''):
++        return 'Makefile'
+     if python_build:
+         return os.path.join(os.path.dirname(sys.executable), "Makefile")
+     lib_dir = get_python_lib(plat_specific=1, standard_lib=1)

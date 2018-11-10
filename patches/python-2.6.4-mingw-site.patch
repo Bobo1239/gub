@@ -1,0 +1,11 @@
+--- python-2.6.4/Lib/site.py.orig	2008-05-10 19:36:24.000000000 +0200
++++ python-2.6.4/Lib/site.py	2012-08-28 22:38:35.384029434 +0200
+@@ -264,7 +264,7 @@ def addsitepackages(known_paths):
+ 
+         if sys.platform in ('os2emx', 'riscos'):
+             sitedirs.append(os.path.join(prefix, "Lib", "site-packages"))
+-        elif os.sep == '/':
++        elif True or os.sep == '/':
+             sitedirs.append(os.path.join(prefix, "lib",
+                                         "python" + sys.version[:3],
+                                         "site-packages"))

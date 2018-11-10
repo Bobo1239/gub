@@ -1,5 +1,5 @@
 CWD:=$(shell pwd)
-PYTHON=python
+PYTHON=$(shell which python)
 PYTHONPATH=.
 export PYTHONPATH
 

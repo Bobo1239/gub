@@ -1,5 +1,6 @@
 import new
 import os
+import warnings
 #
 from gub.syntax import printf
 from gub import cross
@@ -19,6 +20,7 @@ def get_build_from_file (platform, file_name, name):
     # overwriting the PYTHON. namespace from gub/specs/python.py
     # Current workaround: always/also use __darwin etc. postfixing
     # of class names, also in specs/darwin/ etc.
+    warnings.filterwarnings ('ignore', '''Parent module 'python-2' ''')
     module = misc.load_module (file_name, name)
     # cross/gcc.py:Gcc will be called: cross/Gcc.py,
     # to distinguish from specs/gcc.py:Gcc.py

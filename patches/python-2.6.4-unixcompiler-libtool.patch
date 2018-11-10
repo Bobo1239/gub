@@ -1,0 +1,25 @@
+--- python-2.6.4/Lib/distutils/unixccompiler.py~	2012-08-30 08:52:27.832868332 +0200
++++ python-2.6.4/Lib/distutils/unixccompiler.py	2012-08-30 09:20:59.939718180 +0200
+@@ -301,11 +301,13 @@
+         shared_f = self.library_filename(lib, lib_type='shared')
+         dylib_f = self.library_filename(lib, lib_type='dylib')
+         static_f = self.library_filename(lib, lib_type='static')
++        libtool_f = static_f.replace ('.a', '.la')
+ 
+         for dir in dirs:
+             shared = os.path.join(dir, shared_f)
+             dylib = os.path.join(dir, dylib_f)
+             static = os.path.join(dir, static_f)
++            libtool = os.path.join(dir, libtool_f)
+             # We're second-guessing the linker here, with not much hard
+             # data to go on: GCC seems to prefer the shared library, so I'm
+             # assuming that *all* Unix C compilers do.  And of course I'm
+@@ -316,6 +318,8 @@
+                 return shared
+             elif os.path.exists(static):
+                 return static
++            elif os.path.exists(libtool):
++                return libtool
+ 
+         # Oops, didn't find it in *any* of 'dirs'
+         return None

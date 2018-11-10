@@ -495,8 +495,6 @@ or
 In addition to the requirements for GUB, you need
 
   • A TeX installation
-  • texinfo
-  • zip
 
 Build everything
 

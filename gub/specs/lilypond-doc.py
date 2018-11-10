@@ -23,7 +23,8 @@ class LilyPond_doc (lilypond.LilyPond_base):
                 'tools::fonts-ipafont',
                 'tools::fonts-gnufreefont',
                 'tools::texinfo',
-                'system::zip',
+                'tools::zip',
+                'system::tex',
                 ])
     def compile (self):
         # system::xetex uses system's shared libraries instead of GUB's ones.

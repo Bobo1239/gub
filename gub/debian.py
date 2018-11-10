@@ -7,6 +7,7 @@ from gub import build
 from gub import context
 from gub import cross
 from gub import misc
+from gub.tools import python_version
 
 mirror = 'http://ftp.de.debian.org/debian'
 
@@ -177,6 +178,6 @@ gub_to_distro_dict = {
     'libtool-runtime': ['libltdl3'],
     'libiconv-devel': ['libiconv2'],
     'pango': ['libpango1.0-0'],
-    'python-devel': ['python2.4-dev'],
-    'python-runtime': ['python2.4'],
+    'python-devel': ['python%(python_version)s-dev' % globals ()],
+    'python-runtime': ['python%(python_version)s' % globals ()],
     }

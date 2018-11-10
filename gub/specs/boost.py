@@ -103,6 +103,7 @@ class UGLYFIXBoost__mingw (Boost):
         self.func (defer)
 
 class BjamBuild_v1 (target.MakeBuild):
+    python_version = tools.python_version
     @context.subst_method
     def CFLAGS (self):
         return ''
@@ -113,7 +114,7 @@ bjam
 '-sGCC=%(toolchain_prefix)sgcc -fPIC -DBOOST_PLATFORM_CONFIG=\\"boost/config/platform/linux.hpp\\"'
 '-sGXX=%(toolchain_prefix)sg++ -fPIC -DBOOST_PLATFORM_CONFIG=\\"boost/config/platform/linux.hpp\\"'
 '-sBUILD=release <optimization>space <inlining>on <debug-symbols>off <runtime-link>static'
-'-sPYTHON_VERSION=2.4'
+'-sPYTHON_VERSION=%(python_version)s'
 '-scxxflags=-fPIC'
 --layout=system
 --builddir=%(builddir)s

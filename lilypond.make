@@ -37,7 +37,7 @@ $(error backportme:\
 841ee1b... PYTHON-CONFIG: also strip -m* and =.  Thanks Werner!\
 f9e5179... Append /../lib to default rpath.\
 fc158e0... Add --enable-rpath feature, defaulting to $ORIGIN/../lib. Default off.\
-23e401a... Clean-out some junk flags from python-config.  Fixes stray g++ warning ****s.\
+23e401a... Clean-out some junk flags from python-config.  Fixes stray g++ warnings.\
 )
 endif
 
@@ -80,7 +80,7 @@ include compilers.make
 ################
 
 unlocked-update-versions:
-	$(info **** **** unlocked-update-versions rule)
+	$(info **** unlocked-update-versions rule)
 	python gub/versiondb.py --version-db=$(LILYPOND_VERSIONS) --download --platforms="$(PLATFORMS)"
 
 ifneq ($(findstring cygwin,$(PLATFORMS)),)
@@ -265,7 +265,7 @@ unlocked-test-clean:
 	rm -f $(call SIGNATURE_FUNCTION,cached-test-output)
 
 cached-dist-check cached-doc-export cached-test-export:
-	$(info **** cached-dist-check cached-doc-export cached-test-export rule)
+	$(info **** $@ rule)
 	-mkdir -p uploads/signatures
 	if test ! -f  $(call SIGNATURE_FUNCTION,$@) ; then \
 		$(SET_TOOLS_PATH) \

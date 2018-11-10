@@ -1,4 +1,5 @@
 from gub import target
+from gub import tools
 
 class Pygtk (target.AutoBuild):
     source = 'http://ftp.gnome.org/pub/GNOME/sources/pygtk/2.16/pygtk-2.16.0.tar.gz'
@@ -10,7 +11,8 @@ ac_cv_setwakeupfd_ok=yes
     def aclocal_path (self):
         return (target.AutoBuild.aclocal_path (self)
                 + ['%(srcdir)s/m4', '%(srcdir)s'])
-    configure_command = ('PYTHON_INCLUDES=-I%(system_prefix)s/include/python2.4 '
+    python_version = tools.python_version
+    configure_command = ('PYTHON_INCLUDES=-I%(system_prefix)s/include/python%(python_version)s '
                          + target.AutoBuild.configure_command)
     patches = [
         'pygtk-cross.patch',
@@ -32,4 +34,4 @@ class Pygtk__mingw (Pygtk):
 ac_cv_setwakeupfd_ok=no
 '''
     configure_variables = (Pygtk.configure_variables
-                  + ' LDFLAGS="-L%(system_prefix)s/bin -lpython2.4"')
+                  + ' LDFLAGS="-L%(system_prefix)s/bin -lpython%(python_version)s"')

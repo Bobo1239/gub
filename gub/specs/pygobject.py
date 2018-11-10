@@ -1,4 +1,5 @@
 from gub import target
+from gub import tools
 
 class Pygobject (target.AutoBuild):
     source = 'http://ftp.gnome.org/pub/GNOME/sources/pygobject/2.16/pygobject-2.16.1.tar.gz'
@@ -10,7 +11,8 @@ ac_cv_setwakeupfd_ok=yes
     def aclocal_path (self):
         return (target.AutoBuild.aclocal_path (self)
                 + ['%(srcdir)s/m4', '%(srcdir)s'])
-    configure_command = ('PYTHON=%(tools_prefix)s/bin/python PYTHON_INCLUDES=-I%(system_prefix)s/include/python2.4 '
+    python_version = tools.python_version
+    configure_command = ('PYTHON=%(tools_prefix)s/bin/python PYTHON_INCLUDES=-I%(system_prefix)s/include/python%(python_version)s '
                          + target.AutoBuild.configure_command)
     patches = [
         'pygobject-cross.patch',
@@ -31,7 +33,7 @@ class Pygobject__mingw (Pygobject):
         'pygobject-mingw.patch',
         ]
     configure_variables = (Pygobject.configure_variables
-                  + ' LDFLAGS="-L%(system_prefix)s/bin -lpython2.4"')
+                  + ' LDFLAGS="-L%(system_prefix)s/bin -lpython%(python_version)s"')
     config_cache_overrides = target.AutoBuild.config_cache_overrides + '''
 ac_cv_setwakeupfd_ok=no
 '''
